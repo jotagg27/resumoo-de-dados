@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumo de Dados</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #e9ecef;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+        input, select, button {
+            display: block;
+            width: calc(100% - 22px);
+            margin: 10px auto;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .summary {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #f8f9fa;
+            white-space: pre-wrap;
+        }
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .button-container button {
+            width: 45%;
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Coletor de Dados</h1>
+        <form id="dataForm">
+            <label for="name">Nome do Candidato:</label>
+            <input type="text" id="name" required>
+            
+            <label for="party">Partido:</label>
+            <input type="text" id="party" required>
+            
+            <label for="date">Data:</label>
+            <input type="date" id="date" required>
+            
+            <label for="type">Tipo:</label>
+            <select id="type" required>
+                <option value="entrada">Entrada</option>
+                <option value="saída">Saída</option>
+                <option value="ambos">Ambos</option>
+            </select>
+            
+            <label for="account">Número da Conta:</label>
+            <input type="text" id="account" required>
+            
+            <button type="button" onclick="addSummary()">Adicionar Resumo</button>
+            <button type="button" onclick="saveData()">Salvar Dados</button>
+        </form>
+
+        <div id="summaries" class="summary"></div>
+
+        <div class="button-container">
+            <button type="button" onclick="resetForm()">Rodar Novamente</button>
+        </div>
+    </div>
+
+    <script>
+        let summaries = JSON.parse(localStorage.getItem('summaries')) || [];
+
+        function displaySummaries() {
+            document.getElementById('summaries').innerText = summaries.join('');
+        }
+
+        function addSummary() {
+            const name = document.getElementById('name').value;
+            const party = document.getElementById('party').value;
+            const date = document.getElementById('date').value;
+            const type = document.getElementById('type').value;
+            const account = document.getElementById('account').value;
+
+            if (!name || !party || !date || !type || !account) {
+                alert('Por favor, preencha todos os campos.');
+                return;
+            }
+
+            const summary = `Resumo: \nNome do Candidato: ${name}\nPartido: ${party}\nData: ${date}\nTipo: ${type}\nNúmero da Conta: ${account}\n\n`;
+            summaries.push(summary);
+            
+            localStorage.setItem('summaries', JSON.stringify(summaries));
+            displaySummaries();
+            document.getElementById('dataForm').reset();
+        }
+
+        function resetForm() {
+            document.getElementById('dataForm').reset();
+        }
+
+        function saveData() {
+            if (summaries.length === 0) {
+                alert('Não há dados para salvar.');
+                return;
+            }
+            
+            const blob = new Blob([summaries.join('')], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'resumo.txt';
+            link.click();
+        }
+
+        // Exibe os resumos salvos ao carregar a página
+        displaySummaries();
+    </script>
+</body>
+</html>
